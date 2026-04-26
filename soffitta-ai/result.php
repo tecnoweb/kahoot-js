@@ -5,6 +5,7 @@ require_once 'includes/db.php';
 require_once 'includes/helpers.php';
 require_once 'includes/seo.php';
 require_once 'includes/auth.php';
+require_once 'includes/buyer.php';
 
 setSecurityHeaders();
 
@@ -176,6 +177,101 @@ $seoImage = $scan['image_path'] ? BASE_URL . '/' . $scan['image_path'] : BASE_UR
                class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold px-8 py-3 rounded-xl transition">
                 Perizia completa — €2,99
             </a>
+        </div>
+        <?php endif; ?>
+
+        <?php
+        // Acquirenti interessati — visibili al proprietario della scansione
+        $isOwner = ($ownerId && $ownerId === $viewerId) || ($ownerId === null);
+        $buyerMatches = getBuyerMatches($scanId, 5);
+        if ($isOwner && !empty($buyerMatches)):
+        ?>
+        <div class="border-t border-stone-100 p-6">
+            <h2 class="text-lg font-bold mb-1">
+                Potenziali acquirenti
+                <span class="ml-2 text-sm font-normal text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
+                    <?= count($buyerMatches) ?> abbinati
+                </span>
+            </h2>
+            <p class="text-stone-400 text-sm mb-4">
+                Queste aziende potrebbero essere interessate al tuo oggetto
+            </p>
+            <div class="space-y-3">
+                <?php
+                $typeLabels = [
+                    'antiquario'    => 'Antiquario',
+                    'casa_aste'     => 'Casa d\'aste',
+                    'gioielleria'   => 'Gioielleria',
+                    'galleria'      => 'Galleria d\'arte',
+                    'collezionista' => 'Collezionista',
+                    'altro'         => 'Acquirente',
+                ];
+                foreach ($buyerMatches as $bm):
+                    $hasOffer = $bm['status'] === 'offer_made' && $bm['offer_amount'] > 0;
+                ?>
+                <div class="flex items-start gap-4 bg-stone-50 border border-stone-100 rounded-xl p-4
+                             <?= $hasOffer ? 'border-amber-200 bg-amber-50' : '' ?>">
+                    <div class="shrink-0 w-10 h-10 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center font-bold text-sm">
+                        <?= mb_strtoupper(mb_substr($bm['company_name'], 0, 1)) ?>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <?php if ($isPaid): ?>
+                            <span class="font-semibold text-stone-800 text-sm">
+                                <?= htmlspecialchars($bm['company_name']) ?>
+                            </span>
+                            <?php else: ?>
+                            <!-- Nome oscurato per valutazioni non pagate -->
+                            <span class="font-semibold text-stone-800 text-sm">
+                                <?= $typeLabels[$bm['company_type']] ?? 'Acquirente' ?>
+                            </span>
+                            <?php endif; ?>
+                            <?php if ($bm['city']): ?>
+                            <span class="text-xs text-stone-400">
+                                📍 <?= htmlspecialchars($bm['city']) ?>
+                                <?= $bm['province'] ? '(' . htmlspecialchars($bm['province']) . ')' : '' ?>
+                            </span>
+                            <?php endif; ?>
+                            <span class="text-xs text-stone-300">Match: <?= $bm['match_score'] ?>%</span>
+                        </div>
+
+                        <?php if ($hasOffer): ?>
+                        <div class="mt-1.5 bg-amber-100 border border-amber-200 rounded-lg px-3 py-2">
+                            <span class="text-amber-800 font-bold text-sm">
+                                Offerta: €<?= number_format($bm['offer_amount'], 2, ',', '.') ?>
+                            </span>
+                            <?php if ($bm['message']): ?>
+                            <p class="text-stone-600 text-xs mt-1 italic">
+                                "<?= htmlspecialchars(mb_substr($bm['message'], 0, 120)) ?>"
+                            </p>
+                            <?php endif; ?>
+                        </div>
+                        <?php elseif ($bm['status'] === 'interested'): ?>
+                        <p class="text-green-600 text-xs mt-1 font-medium">Interessato</p>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if (!$isPaid): ?>
+                    <!-- Sblocca contatti con perizia pagata -->
+                    <a href="/checkout.php?scan_id=<?= $scanId ?>"
+                       class="shrink-0 text-xs bg-amber-500 hover:bg-amber-600 text-white font-medium px-3 py-1.5 rounded-lg transition">
+                        Sblocca
+                    </a>
+                    <?php elseif ($bm['website']): ?>
+                    <a href="<?= htmlspecialchars($bm['website']) ?>" target="_blank" rel="noopener"
+                       class="shrink-0 text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium px-3 py-1.5 rounded-lg transition">
+                        Sito →
+                    </a>
+                    <?php endif; ?>
+                </div>
+                <?php endforeach; ?>
+            </div>
+
+            <?php if (!$isPaid): ?>
+            <p class="text-center text-xs text-stone-300 mt-4">
+                I nomi completi delle aziende e i contatti sono visibili con la perizia completa
+            </p>
+            <?php endif; ?>
         </div>
         <?php endif; ?>
     </div>

@@ -5,6 +5,7 @@ require_once '../includes/db.php';
 require_once '../includes/auth.php';
 require_once '../includes/claude.php';
 require_once '../includes/helpers.php';
+require_once '../includes/buyer.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -113,9 +114,13 @@ if ($userId) {
     $_SESSION['anon_scan_done'] = true;
 }
 
+// Abbina potenziali acquirenti in background (non blocca la risposta)
+$matchCount = createBuyerMatches($scanId);
+
 jsonResponse(true, [
-    'scan_id'  => $scanId,
-    'slug'     => $slug,
-    'data'     => $analysis,
-    'image'    => BASE_URL . '/' . $imagePath,
+    'scan_id'      => $scanId,
+    'slug'         => $slug,
+    'data'         => $analysis,
+    'image'        => BASE_URL . '/' . $imagePath,
+    'buyer_matches'=> $matchCount,
 ]);

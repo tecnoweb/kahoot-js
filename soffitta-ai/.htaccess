@@ -17,6 +17,10 @@ RewriteRule ^prezzi/?$                    pricing.php             [L]
 RewriteRule ^faq/?$                       faq.php                 [L]
 RewriteRule ^sitemap\.xml$                sitemap.php             [L]
 
+# Area aziende
+RewriteRule ^registra-azienda/?$          register-company.php    [L]
+RewriteRule ^accedi-aziende/?$            login-company.php       [L]
+
 # Blocca accesso diretto alla cartella uploads (sicurezza)
 RewriteRule ^uploads/.*\.php$ - [F,L]
 

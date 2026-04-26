@@ -11,6 +11,7 @@
             <a href="/faq" class="hover:text-amber-600 transition">FAQ</a>
             <a href="/categoria/quadri" class="hover:text-amber-600 transition">Quadri</a>
             <a href="/categoria/gioielli" class="hover:text-amber-600 transition">Gioielli</a>
+            <a href="/register-company.php" class="hover:text-amber-600 transition">Sei un'azienda?</a>
             <a href="/contatti" class="hover:text-amber-600 transition">Contatti</a>
         </div>
         <div class="text-xs text-stone-300">© <?= date('Y') ?> Soffitta.ai</div>
