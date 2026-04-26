@@ -4,6 +4,9 @@ require_once 'includes/config.php';
 require_once 'includes/helpers.php';
 require_once 'includes/auth.php';
 require_once 'includes/seo.php';
+require_once 'includes/i18n.php';
+
+$lang = initI18n();
 
 setSecurityHeaders();
 $csrf  = generateCsrfToken();
@@ -16,10 +19,20 @@ $faqs  = [
 ];
 ?>
 <!DOCTYPE html>
-<html lang="it">
+<html <?= htmlLangAttrs() ?>>
 <head>
     <meta charset="UTF-8">
-    <?php renderSEO(); renderPerformanceHead(); renderSchemaWebsite(); renderSchemaFAQ($faqs); ?>
+    <?php
+    renderSEO([
+        'title'       => t('site_name') . ' — ' . t('hero_title'),
+        'description' => 'Fotografa oggetti antichi, quadri, gioielli e mobili trovati in soffitta. L\'intelligenza artificiale li identifica e stima il valore in 30 secondi.',
+    ]);
+    renderPerformanceHead();
+    renderHreflang('/');
+    renderSchemaWebsite();
+    renderSchemaFAQ($faqs);
+    ?>
+    <?php if (isRtl()): ?><style>body{direction:rtl;text-align:right}</style><?php endif; ?>
     <style>
         body { font-family: 'Inter', sans-serif; }
         h1, h2, h3 { font-family: 'Playfair Display', serif; }
@@ -56,11 +69,10 @@ $faqs  = [
 <!-- Hero -->
 <section class="max-w-3xl mx-auto px-4 pt-16 pb-8 text-center">
     <h1 class="text-4xl md:text-5xl font-bold text-stone-900 leading-tight mb-4">
-        Scopri il valore degli<br>oggetti di casa con l'AI
+        <?= t('hero_title') ?>
     </h1>
     <p class="text-lg text-stone-500 mb-8">
-        Fotografa quadri, gioielli, ceramiche o mobili trovati in soffitta.<br>
-        In 30 secondi l'AI li identifica e stima il valore di mercato.
+        <?= nl2br(htmlspecialchars(t('hero_subtitle'))) ?>
     </p>
 
     <!-- Upload area -->
@@ -70,9 +82,9 @@ $faqs  = [
              role="button" aria-label="Carica immagine oggetto">
             <div id="dropzoneContent">
                 <div class="text-5xl mb-4">📷</div>
-                <p class="text-stone-600 font-medium">Trascina qui la foto dell'oggetto</p>
-                <p class="text-stone-400 text-sm mt-1">oppure clicca per scegliere un file</p>
-                <p class="text-stone-300 text-xs mt-3">JPG, PNG, WEBP · max 10MB</p>
+                <p class="text-stone-600 font-medium"><?= t('upload_title') ?></p>
+                <p class="text-stone-400 text-sm mt-1"><?= t('upload_or') ?></p>
+                <p class="text-stone-300 text-xs mt-3"><?= t('upload_hint') ?></p>
             </div>
             <img id="preview" src="" alt="Anteprima oggetto" class="hidden max-h-64 mx-auto rounded-xl mt-4 object-contain">
         </div>
@@ -82,7 +94,7 @@ $faqs  = [
         <!-- Loader -->
         <div id="loader" class="hidden mt-6 text-center">
             <div class="inline-block w-10 h-10 border-4 border-amber-300 border-t-amber-600 rounded-full animate-spin mb-3"></div>
-            <p class="text-stone-500 text-sm">L'AI sta analizzando il tuo oggetto…</p>
+            <p class="text-stone-500 text-sm"><?= t('analyzing') ?></p>
         </div>
 
         <!-- Risultato -->
@@ -92,7 +104,7 @@ $faqs  = [
 
 <!-- Come funziona — pillole -->
 <section class="max-w-4xl mx-auto px-4 py-12">
-    <h2 class="text-2xl font-bold text-center mb-8">Come funziona</h2>
+    <h2 class="text-2xl font-bold text-center mb-8"><?= t('how_title') ?></h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <?php foreach ([
             ['📸', 'Fotografa', 'Scatta o carica la foto dell\'oggetto con il tuo smartphone'],
@@ -160,5 +172,6 @@ $faqs  = [
 </footer>
 
 <script src="/assets/app.js"></script>
+<?php include 'includes/_gdpr.php'; ?>
 </body>
 </html>

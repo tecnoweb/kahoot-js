@@ -10,12 +10,17 @@ function renderSEO(array $params = []): void {
         'image'       => BASE_URL . '/assets/og-image.jpg',
         'type'        => 'website',
     ];
+    // Usa locale da i18n se disponibile
+    if (function_exists('getCurrentLocale')) {
+        $defaults['locale'] = getCurrentLocale();
+    }
     $p     = array_merge($defaults, $params);
     $title = htmlspecialchars($p['title'], ENT_QUOTES, 'UTF-8');
     $desc  = htmlspecialchars($p['description'], ENT_QUOTES, 'UTF-8');
     $url   = htmlspecialchars($p['url'], ENT_QUOTES, 'UTF-8');
     $img   = htmlspecialchars($p['image'], ENT_QUOTES, 'UTF-8');
     $kw    = htmlspecialchars($p['keywords'], ENT_QUOTES, 'UTF-8');
+    $locale = htmlspecialchars($p['locale'] ?? 'it_IT', ENT_QUOTES, 'UTF-8');
     echo <<<HTML
     <title>{$title}</title>
     <meta name="description" content="{$desc}">
@@ -29,7 +34,7 @@ function renderSEO(array $params = []): void {
     <meta property="og:title"       content="{$title}">
     <meta property="og:description" content="{$desc}">
     <meta property="og:image"       content="{$img}">
-    <meta property="og:locale"      content="it_IT">
+    <meta property="og:locale"      content="{$locale}">
     <meta property="og:site_name"   content="Soffitta.ai">
     <meta name="twitter:card"        content="summary_large_image">
     <meta name="twitter:title"       content="{$title}">

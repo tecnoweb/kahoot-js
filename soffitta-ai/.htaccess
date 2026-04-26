@@ -21,6 +21,11 @@ RewriteRule ^sitemap\.xml$                sitemap.php             [L]
 RewriteRule ^registra-azienda/?$          register-company.php    [L]
 RewriteRule ^accedi-aziende/?$            login-company.php       [L]
 
+# GDPR/Legal
+RewriteRule ^privacy/?$                   privacy.php             [L]
+RewriteRule ^cookie-policy/?$             cookie-policy.php       [L]
+RewriteRule ^termini/?$                   termini.php             [L]
+
 # Blocca accesso diretto alla cartella uploads (sicurezza)
 RewriteRule ^uploads/.*\.php$ - [F,L]
 
