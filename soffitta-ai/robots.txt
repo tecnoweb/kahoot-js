@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /uploads/
+Disallow: /dashboard.php
+Disallow: /checkout.php
+Disallow: /login.php
+Disallow: /register.php
+
+Sitemap: https://soffitta.ai/sitemap.php

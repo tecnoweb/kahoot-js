@@ -1,0 +1,13 @@
+# Blocca l'esecuzione di PHP nella cartella uploads
+<FilesMatch "\.php$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Blocca accesso a file non immagine
+<FilesMatch "^(?!.*\.(jpg|jpeg|png|webp|gif)$).*$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+Options -Indexes
